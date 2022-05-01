@@ -5,3 +5,8 @@ This is a single-page app (SPA) that was designed for openwhyd.org users to sear
 Feel free to customize it
 - by [remixing it on glitch.com](https://glitch.com/~openwhyd-mobile-client), or
 - by [forking it on github.com](https://github.com/openwhyd/openwhyd-mobile-web-client)
+
+## References
+
+- https://github.com/adrienjoly/openwhyd-search/blob/master/openwhyd-search.js
+- https://github.com/openwhyd/openwhyd/pull/556/files

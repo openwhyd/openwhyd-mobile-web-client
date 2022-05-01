@@ -24,39 +24,18 @@ window.$ =
       document.getElementsByTagName("head")[0].appendChild(inc);
     }
 
-    function loadJSON(src, cb) {
-      var r = new XMLHttpRequest();
-      r.onload = function () {
-        var res = undefined;
-        try {
-          res = JSON.parse(this.responseText);
-        } catch (e) {
-          console.error(e);
-        }
-        cb(res, this);
-      };
-      r.open("get", src, true);
-      r.send();
-    }
-
     var _getJSON_counter = 0;
     return {
-      getJSON: function (url, cb) {
-        if (url[0] == "/" || url.indexOf("=?") == -1)
-          // local request
-          loadJSON(url, cb);
-        else {
-          var wFct = "_getJSON_cb_" + ++_getJSON_counter;
-          var wUrl = url.replace("=?", "=" + wFct);
-          window[wFct] = function (data) {
-            cb(data);
-            // TODO: remove script element from DOM
-            delete window[wFct];
-          };
-          loadJS(wUrl);
-        }
+      getJSON: (url, cb) => {
+        var wFct = "_getJSON_cb_" + ++_getJSON_counter;
+        var wUrl = url.replace("=?", "=" + wFct);
+        window[wFct] = function (data) {
+          cb(data);
+          // TODO: remove script element from DOM
+          delete window[wFct];
+        };
+        loadJS(wUrl);
       },
-      getScript: loadJS,
     };
   })();
 
@@ -232,51 +211,44 @@ window.$ =
     document.getElementById(id).style.display = "block";
   }
 
-  function onAddTrack(btn) {
-    var elt = btn.target.parentElement;
-    var track = elt.dataset;
-    var postData = {
-      action: "insert",
-      ctx: "mob",
-      eId: track.eid,
-      img: track.img,
-      name: elt.getElementsByTagName("a")[0].innerText,
-      "src[id]": "http://openwhyd.org/mobile",
-      "src[name]": "Openwhyd Mobile Track Finder",
-    };
-    console.log("posting...", postData);
-    var params = Object.keys(postData).map(function (key) {
-      return key + "=" + encodeURIComponent(postData[key]);
-    });
-    $.getJSON(
-      `${OPENWHYD_ORIGIN}/api/post?${params.join("&")}`,
-      function (post) {
-        console.log("posted:", post);
-        if (!post || post.error)
-          alert(
-            "Sorry, we were unable to add this track\n" +
-              ((post || {}).error || "")
-          );
-        else alert("Succesfully added this track!");
-      }
-    );
-  }
+  // function onAddTrack(btn) {
+  //   var elt = btn.target.parentElement;
+  //   var track = elt.dataset;
+  //   var postData = {
+  //     action: "insert",
+  //     ctx: "mob",
+  //     eId: track.eid,
+  //     img: track.img,
+  //     name: elt.getElementsByTagName("a")[0].innerText,
+  //     "src[id]": "http://openwhyd.org/mobile",
+  //     "src[name]": "Openwhyd Mobile Track Finder",
+  //   };
+  //   console.log("posting...", postData);
+  //   var params = Object.keys(postData).map(function (key) {
+  //     return key + "=" + encodeURIComponent(postData[key]);
+  //   });
+  //   $.getJSON(
+  //     `${OPENWHYD_ORIGIN}/api/post?${params.join("&")}`,
+  //     function (post) {
+  //       console.log("posted:", post);
+  //       if (!post || post.error)
+  //         alert(
+  //           "Sorry, we were unable to add this track\n" +
+  //             ((post || {}).error || "")
+  //         );
+  //       else alert("Succesfully added this track!");
+  //     }
+  //   );
+  // }
 
-  //var mainResults = document.getElementById("mainResults");
   var defaultResults = document.getElementById("pgResults").innerHTML;
 
   const searchBox = document.getElementById("q");
-
-  function clearResults() {}
 
   function search(query) {
     var results = [];
     query = query.trim().toLowerCase(); // normalize search query
     var terms = !query ? [] : query.split(" ");
-    console.log("query terms:", terms);
-    if (!terms.length) {
-      return [];
-    }
     return terms.reduce(
       // exclude results which name do not contain this term
       (results, term) =>
@@ -284,49 +256,22 @@ window.$ =
       myTracks
     );
   }
-  
-  function displaySearchResults(query){
+
+  function displaySearchResults(query) {
     if (!query) {
-      switchToPage('pgMain');
+      switchToPage("pgMain");
       return;
     }
-    switchToPage('pgResults');
+    switchToPage("pgResults");
     const tracks = search(query);
-    displayTracks(tracks, "myPosts");
-    
+    if (tracks.length === 0) {
+      document.getElementById("pgResults").innerHTML = defaultResults;
+    } else {
+      displayTracks(tracks, "myPosts");
+    }
   }
 
   searchBox.onkeyup = () => displaySearchResults(searchBox.value);
-
-  // var qS = new QuickSearch(QuickSearch(, {
-  //   noMoreResultsOnEnter: true,
-  //   submitQuery: function (query, display) {
-  //     // called a short delay after when a query was entered
-  //     display(defaultResults, true); // clear the result list and keep the searching animation rolling
-  //     var remaining = tF.length;
-  //     function handleResults(res, engine) {
-  //       --remaining;
-  //       if (!res || res.error || res.errors)
-  //         console.log('error(s)', engine.label, res);
-  //       else
-  //         for (let i in res) {
-  //           var container = document.getElementById(i);
-  //           display(renderResults(res[i], i, query), remaining, container);
-  //           var btns = container.getElementsByClassName('btnAdd');
-  //           for (let i in btns) btns[i].onclick = onAddTrack;
-  //         }
-  //     }
-  //     tF.query(query, handleResults);
-  //   },
-  //   onNewQuery: function () {
-  //     //mainResults.style.display = "none";
-  //     switchToPage('pgResults');
-  //   },
-  //   onEmpty: function () {
-  //     //mainResults.style.display = "block";
-  //     switchToPage('pgMain');
-  //   },
-  // });
 
   document.getElementsByClassName("searchClear")[0].onclick = function () {
     searchBox.value = "";
