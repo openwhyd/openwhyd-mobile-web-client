@@ -1,6 +1,7 @@
 /* globals $ */
 
 const OPENWHYD_ORIGIN = "https://openwhyd.org";
+const STREAM_LIMIT = 999999;
 
 // AJAX functions
 
@@ -136,7 +137,7 @@ window.$ =
       };
     }
     $.getJSON(
-      url + "?format=json&callback=?",
+      `${url}?format=json&limit=${STREAM_LIMIT}&callback=?`,
       function (r) {
         if (r)
           document.getElementById(id).innerHTML = renderResults(
@@ -199,13 +200,17 @@ window.$ =
   }
 
   // main logic
+  
+  let myTracks = [];
 
   function loadMainPage() {
     const userId = new URLSearchParams(window.location.search).get("uId")
     if (!userId) return;
     loadUserPlaylists(userId, function (user, playlists) {
       document.getElementById("pleaseLogin").style.display = "none";
-      loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, "myLastPosts");
+      loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, "myLastPosts", (tracks) => {
+        myTracks = tracks;
+      });
       for (let i = 0; i < playlists.length; ++i)
         playlists[i].onclick = function (e) {
           e.preventDefault();

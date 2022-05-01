@@ -72,7 +72,7 @@ a {
   padding-left: 30px;
   outline: none;
   margin: 0;
-  background: url(/images/big-icon-filter-hover.png) no-repeat 5px 50%;
+  background: url(https://cdn.glitch.global/7b0df6c9-345c-45ad-aea2-98af77497801/big-icon-filter-hover.png?v=1651407006874) no-repeat 5px 50%;
   border: none;
   color: #555;
   font-size: 16px;
@@ -83,13 +83,13 @@ a {
   top: 7px;
   right: 0px;
   border: none;
-  background: url(/images/icon-close.png) no-repeat 0 -16px;
+  background: url(https://cdn.glitch.global/7b0df6c9-345c-45ad-aea2-98af77497801/icon-close.png?v=1651407066906) no-repeat 0 -16px;
   width: 16px;
   height: 16px;
 }
 
 .searchClear.loading {
-  background: url(/images/loader.gif) no-repeat 0 0;
+  background: url(https://cdn.glitch.global/7b0df6c9-345c-45ad-aea2-98af77497801/loader.gif?v=1651407095131) no-repeat 0 0;
 }
 
 h1 {
