@@ -126,7 +126,7 @@ window.$ =
       .concat(["</ul>"])
       .join("\n");
   }
-  
+
   const renderTrack = (t) => ({
     url: eidToUrl(t.eId),
     img: t.img,
@@ -144,7 +144,8 @@ window.$ =
 
   function loadStream(url, callback) {
     $.getJSON(
-      `${url}?format=json&limit=${STREAM_LIMIT}&callback=?`, callback,
+      `${url}?format=json&limit=${STREAM_LIMIT}&callback=?`,
+      callback,
       "json"
     );
   }
@@ -183,7 +184,7 @@ window.$ =
   function loadPlaylist(playlist) {
     var url =
       OPENWHYD_ORIGIN + playlist.href.substr(playlist.href.indexOf("/u/"));
-  
+
     document.getElementById("playlistName").innerText = playlist.innerText;
     document.getElementById("playlistTracks").innerHTML = "";
     var i = 0;
@@ -201,17 +202,20 @@ window.$ =
   }
 
   // main logic
-  
+
   let myTracks = [];
 
   function loadMainPage() {
-    const userId = new URLSearchParams(window.location.search).get("uId")
+    const userId = new URLSearchParams(window.location.search).get("uId");
     if (!userId) return;
     loadUserPlaylists(userId, function (user, playlists) {
       document.getElementById("pleaseLogin").style.display = "none";
       loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, (tracks) => {
         if (tracks) displayTracks(tracks.slice(0, NB_TRACKS), "myLastPosts");
-        myTracks = tracks;
+        myTracks = tracks.map((tr) => ({
+          ...tr,
+          _normalized: [tr.name, tr.text].join(" ").toLowerCase(), // pre-compute and store normalized post name & description (for faster search)
+        }));
       });
       for (let i = 0; i < playlists.length; ++i)
         playlists[i].onclick = function (e) {
@@ -244,36 +248,56 @@ window.$ =
     var params = Object.keys(postData).map(function (key) {
       return key + "=" + encodeURIComponent(postData[key]);
     });
-    $.getJSON(`${OPENWHYD_ORIGIN}/api/post?${params.join("&")}`, function (post) {
-      console.log("posted:", post);
-      if (!post || post.error)
-        alert(
-          "Sorry, we were unable to add this track\n" +
-            ((post || {}).error || "")
-        );
-      else alert("Succesfully added this track!");
-    });
+    $.getJSON(
+      `${OPENWHYD_ORIGIN}/api/post?${params.join("&")}`,
+      function (post) {
+        console.log("posted:", post);
+        if (!post || post.error)
+          alert(
+            "Sorry, we were unable to add this track\n" +
+              ((post || {}).error || "")
+          );
+        else alert("Succesfully added this track!");
+      }
+    );
   }
 
   //var mainResults = document.getElementById("mainResults");
   var defaultResults = document.getElementById("pgResults").innerHTML;
 
-  const searchBox = document.getElementById('searchField');
+  const searchBox = document.getElementById("q");
 
-  function clearResults() {
+  function clearResults() {}
+
+  function search(query) {
+    var results = [];
+    query = query.trim().toLowerCase(); // normalize search query
+    var terms = !query ? [] : query.split(" ");
+    console.log("query terms:", terms);
+    if (!terms.length) {
+      return [];
+    }
+    return terms.reduce(
+      // exclude results which name do not contain this term
+      (results, term) =>
+        results.filter((res) => res._normalized.indexOf(term) !== -1),
+      myTracks
+    );
+  }
+  
+  function displaySearchResults(query){
+    if (!query) {
+      switchToPage('pgMain');
+      return;
+    }
+    switchToPage('pgResults');
+    const tracks = search(query);
+    displayTracks(tracks, "myPosts");
     
   }
-  
-  searchBox.onkeyup = () => {
-    clearResults()
-    var results = search(searchBox.value)
-    if (!results || !results.length) {
-      appendResult({ name: '(no results)' })
-    } else {
-      results.forEach(appendResult)
-    }
-  }
-  
+
+  searchBox.onkeyup = () => displaySearchResults(searchBox.value);
+
   // var qS = new QuickSearch(QuickSearch(, {
   //   noMoreResultsOnEnter: true,
   //   submitQuery: function (query, display) {
@@ -304,10 +328,11 @@ window.$ =
   //   },
   // });
 
-  document.getElementsByClassName('searchClear')[0].onclick = function () {
-    qS.search('');
+  document.getElementsByClassName("searchClear")[0].onclick = function () {
+    searchBox.value = "";
+    displaySearchResults();
   };
-  
+
   document.getElementById("exitPlaylist").onclick = function () {
     switchToPage("pgMain");
   };
