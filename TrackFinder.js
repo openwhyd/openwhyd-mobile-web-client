@@ -119,6 +119,29 @@ window.$ =
     );
   }
 
+  function displayPlaylists(userId, playlists, sectionId) {
+    var i = 0,
+      more = { cssClass: "showMore", name: "More..." };
+    function renderPlaylist(t) {
+      return {
+        cssClass: "playlist" + (++i > 3 ? " hidden" : ""),
+        url: t.url,
+        img: `${OPENWHYD_ORIGIN}/img/playlist/${userId}_${t.id}`,
+        name: t.name,
+      };
+    }
+    document.getElementById(sectionId).innerHTML = renderResults(
+      playlists.map(renderPlaylist).concat(more),
+      sectionId
+    );
+    document.getElementsByClassName("showMore")[0].onclick = function (e) {
+      e.preventDefault();
+      this.parentNode.removeChild(this);
+      fadeIn(document.getElementsByClassName("hidden"));
+      return false;
+    };
+  }
+
   // data retrieval
 
   function loadStream(url, callback) {
@@ -135,26 +158,7 @@ window.$ =
       function (pl) {
         const u = { pl };
         if (!u || !u.pl) return;
-        var i = 0,
-          more = { cssClass: "showMore", name: "More..." };
-        function renderPlaylist(t) {
-          return {
-            cssClass: "playlist" + (++i > 3 ? " hidden" : ""),
-            url: t.url,
-            img: `${OPENWHYD_ORIGIN}/img/playlist/${userId}_${t.id}`,
-            name: t.name,
-          };
-        }
-        document.getElementById("myPlaylists").innerHTML = renderResults(
-          u.pl.map(renderPlaylist).concat(more),
-          "myPlaylists"
-        );
-        document.getElementsByClassName("showMore")[0].onclick = function (e) {
-          e.preventDefault();
-          this.parentNode.removeChild(this);
-          fadeIn(document.getElementsByClassName("hidden"));
-          return false;
-        };
+        displayPlaylists(userId, u.pl, "myPlaylists");
         cb && cb(u, document.getElementsByClassName("playlist"));
       }
     );
