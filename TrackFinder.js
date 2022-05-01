@@ -138,6 +138,13 @@ window.$ =
       fadeIn(document.getElementsByClassName("hidden"));
       return false;
     };
+    const playlistNodes = document.getElementsByClassName("playlist");
+    for (let i = 0; i < playlistNodes.length; ++i)
+      playlistNodes[i].onclick = function (e) {
+        e.preventDefault();
+        loadPlaylist(e.target);
+        return false;
+      };
   }
 
   // data retrieval
@@ -186,7 +193,7 @@ window.$ =
     if (!userId) return;
     loadUserPlaylists(userId, function (playlists) {
       document.getElementById("pleaseLogin").style.display = "none";
-      
+
       displayPlaylists(userId, playlists, "myPlaylists");
 
       loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, (tracks) => {
@@ -196,14 +203,6 @@ window.$ =
           _normalized: [tr.name, tr.text].join(" ").toLowerCase(), // pre-compute and store normalized post name & description (for faster search)
         }));
       });
-      
-      const playlistNodes = document.getElementsByClassName("playlist")
-      for (let i = 0; i < playlistNodes.length; ++i)
-        playlistNodes[i].onclick = function (e) {
-          e.preventDefault();
-          loadPlaylist(e.target);
-          return false;
-        };
     });
   }
 
