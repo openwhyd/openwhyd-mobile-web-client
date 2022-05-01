@@ -150,15 +150,10 @@ window.$ =
     );
   }
 
-  function loadUserPlaylists(userId, cb) {
+  function loadUserPlaylists(userId, callback) {
     $.getJSON(
       `${OPENWHYD_ORIGIN}/u/${userId}/playlists?format=json&callback=?`,
-      function (pl) {
-        const u = { pl };
-        if (!u || !u.pl) return;
-        displayPlaylists(userId, u.pl, "myPlaylists");
-        cb && cb(u, document.getElementsByClassName("playlist"));
-      }
+      callback
     );
   }
 
@@ -189,8 +184,11 @@ window.$ =
   function loadMainPage() {
     const userId = new URLSearchParams(window.location.search).get("uId");
     if (!userId) return;
-    loadUserPlaylists(userId, function (user, playlists) {
+    loadUserPlaylists(userId, function (playlists) {
       document.getElementById("pleaseLogin").style.display = "none";
+      
+      displayPlaylists(userId, playlists, "myPlaylists");
+
       loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, (tracks) => {
         if (tracks) displayTracks(tracks.slice(0, NB_TRACKS), "myLastPosts");
         myTracks = tracks.map((tr) => ({
@@ -198,8 +196,10 @@ window.$ =
           _normalized: [tr.name, tr.text].join(" ").toLowerCase(), // pre-compute and store normalized post name & description (for faster search)
         }));
       });
-      for (let i = 0; i < playlists.length; ++i)
-        playlists[i].onclick = function (e) {
+      
+      const playlistNodes = document.getElementsByClassName("playlist")
+      for (let i = 0; i < playlistNodes.length; ++i)
+        playlistNodes[i].onclick = function (e) {
           e.preventDefault();
           loadPlaylist(e.target);
           return false;
