@@ -203,7 +203,9 @@ window.$ =
   // main logic
 
   function loadMainPage() {
-    const userURI = DEFAULT_USER_URI;
+    const userId = new URLSearchParams(window.location.search).get("uId")
+    if (!userId) return;
+    const userURI = `u/${userId}` // DEFAULT_USER_URI;
     loadUserPlaylists(userURI, function (user, playlists) {
       document.getElementById("pleaseLogin").style.display = "none";
       loadStream(`${OPENWHYD_ORIGIN}/${userURI}`, "myLastPosts");
