@@ -1,7 +1,6 @@
 /* globals $ */
 
 const OPENWHYD_ORIGIN = "https://openwhyd.org";
-const DEFAULT_USER_URI = "adrien";
 
 // AJAX functions
 
@@ -150,20 +149,19 @@ window.$ =
     );
   }
 
-  function loadUserPlaylists(userURI, cb) {
+  function loadUserPlaylists(userId, cb) {
     $.getJSON(
-      `${OPENWHYD_ORIGIN}/${userURI}/playlists?format=json&callback=?`,
+      `${OPENWHYD_ORIGIN}/u/${userId}/playlists?format=json&callback=?`,
       function (pl) {
         const u = { pl };
         if (!u || !u.pl) return;
-        var uid = u._id,
-          i = 0,
+        var i = 0,
           more = { cssClass: "showMore", name: "More..." };
         function renderPlaylist(t) {
           return {
             cssClass: "playlist" + (++i > 3 ? " hidden" : ""),
             url: t.url,
-            img: "/img/playlist/" + uid + "_" + t.id,
+            img: `${OPENWHYD_ORIGIN}/img/playlist/${userId}_${t.id}`,
             name: t.name,
           };
         }
@@ -205,10 +203,9 @@ window.$ =
   function loadMainPage() {
     const userId = new URLSearchParams(window.location.search).get("uId")
     if (!userId) return;
-    const userURI = `u/${userId}` // DEFAULT_USER_URI;
-    loadUserPlaylists(userURI, function (user, playlists) {
+    loadUserPlaylists(userId, function (user, playlists) {
       document.getElementById("pleaseLogin").style.display = "none";
-      loadStream(`${OPENWHYD_ORIGIN}/${userURI}`, "myLastPosts");
+      loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, "myLastPosts");
       for (let i = 0; i < playlists.length; ++i)
         playlists[i].onclick = function (e) {
           e.preventDefault();
@@ -240,7 +237,7 @@ window.$ =
     var params = Object.keys(postData).map(function (key) {
       return key + "=" + encodeURIComponent(postData[key]);
     });
-    $.getJSON("/api/post?" + params.join("&"), function (post) {
+    $.getJSON(`${OPENWHYD_ORIGIN}/api/post?${params.join("&")}`, function (post) {
       console.log("posted:", post);
       if (!post || post.error)
         alert(
