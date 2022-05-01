@@ -2,6 +2,7 @@
 
 const OPENWHYD_ORIGIN = "https://openwhyd.org";
 const STREAM_LIMIT = 999999;
+const NB_TRACKS = 20;
 
 // AJAX functions
 
@@ -125,27 +126,25 @@ window.$ =
       .concat(["</ul>"])
       .join("\n");
   }
+  
+  const renderTrack = (t) => ({
+    url: eidToUrl(t.eId),
+    img: t.img,
+    name: t.name,
+  });
+
+  function displayTracks(tracks, sectionId) {
+    document.getElementById(sectionId).innerHTML = renderResults(
+      tracks.map(renderTrack),
+      sectionId
+    );
+  }
 
   // data retrieval
 
-  function loadStream(url, id, cb) {
-    function renderLastPost(t) {
-      return {
-        url: eidToUrl(t.eId),
-        img: t.img,
-        name: t.name,
-      };
-    }
+  function loadStream(url, callback) {
     $.getJSON(
-      `${url}?format=json&limit=${STREAM_LIMIT}&callback=?`,
-      function (r) {
-        if (r)
-          document.getElementById(id).innerHTML = renderResults(
-            r.map(renderLastPost),
-            id
-          );
-        cb && cb(r);
-      },
+      `${url}?format=json&limit=${STREAM_LIMIT}&callback=?`, callback,
       "json"
     );
   }
@@ -184,11 +183,13 @@ window.$ =
   function loadPlaylist(playlist) {
     var url =
       OPENWHYD_ORIGIN + playlist.href.substr(playlist.href.indexOf("/u/"));
+  
     document.getElementById("playlistName").innerText = playlist.innerText;
     document.getElementById("playlistTracks").innerHTML = "";
     var i = 0;
-    loadStream(url, "playlistTracks", function (tracks) {
+    loadStream(url, function (tracks) {
       tracks = tracks || [];
+      displayTracks(tracks, "playlistTracks");
       document.getElementById(
         "toYouTube"
       ).href = `https://www.youtube.com/watch_videos?video_ids=${tracks
@@ -208,7 +209,8 @@ window.$ =
     if (!userId) return;
     loadUserPlaylists(userId, function (user, playlists) {
       document.getElementById("pleaseLogin").style.display = "none";
-      loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, "myLastPosts", (tracks) => {
+      loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, (tracks) => {
+        if (tracks) displayTracks(tracks.slice(0, NB_TRACKS), "myLastPosts");
         myTracks = tracks;
       });
       for (let i = 0; i < playlists.length; ++i)
@@ -256,6 +258,56 @@ window.$ =
   //var mainResults = document.getElementById("mainResults");
   var defaultResults = document.getElementById("pgResults").innerHTML;
 
+  const searchBox = document.getElementById('searchField');
+
+  function clearResults() {
+    
+  }
+  
+  searchBox.onkeyup = () => {
+    clearResults()
+    var results = search(searchBox.value)
+    if (!results || !results.length) {
+      appendResult({ name: '(no results)' })
+    } else {
+      results.forEach(appendResult)
+    }
+  }
+  
+  // var qS = new QuickSearch(QuickSearch(, {
+  //   noMoreResultsOnEnter: true,
+  //   submitQuery: function (query, display) {
+  //     // called a short delay after when a query was entered
+  //     display(defaultResults, true); // clear the result list and keep the searching animation rolling
+  //     var remaining = tF.length;
+  //     function handleResults(res, engine) {
+  //       --remaining;
+  //       if (!res || res.error || res.errors)
+  //         console.log('error(s)', engine.label, res);
+  //       else
+  //         for (let i in res) {
+  //           var container = document.getElementById(i);
+  //           display(renderResults(res[i], i, query), remaining, container);
+  //           var btns = container.getElementsByClassName('btnAdd');
+  //           for (let i in btns) btns[i].onclick = onAddTrack;
+  //         }
+  //     }
+  //     tF.query(query, handleResults);
+  //   },
+  //   onNewQuery: function () {
+  //     //mainResults.style.display = "none";
+  //     switchToPage('pgResults');
+  //   },
+  //   onEmpty: function () {
+  //     //mainResults.style.display = "block";
+  //     switchToPage('pgMain');
+  //   },
+  // });
+
+  document.getElementsByClassName('searchClear')[0].onclick = function () {
+    qS.search('');
+  };
+  
   document.getElementById("exitPlaylist").onclick = function () {
     switchToPage("pgMain");
   };
