@@ -112,6 +112,13 @@ window.$ =
     name: t.name,
   });
 
+  const renderPlaylist = (userId) => (playlist, i) => ({
+    cssClass: "playlist" + (i >= 3 ? " hidden" : ""),
+    url: playlist.url,
+    img: `${OPENWHYD_ORIGIN}/img/playlist/${userId}_${playlist.id}`,
+    name: playlist.name,
+  });
+
   function displayTracks(tracks, sectionId) {
     document.getElementById(sectionId).innerHTML = renderResults(
       tracks.map(renderTrack),
@@ -120,18 +127,9 @@ window.$ =
   }
 
   function displayPlaylists(userId, playlists, sectionId) {
-    var i = 0,
-      more = { cssClass: "showMore", name: "More..." };
-    function renderPlaylist(t) {
-      return {
-        cssClass: "playlist" + (++i > 3 ? " hidden" : ""),
-        url: t.url,
-        img: `${OPENWHYD_ORIGIN}/img/playlist/${userId}_${t.id}`,
-        name: t.name,
-      };
-    }
+    const more = { cssClass: "showMore", name: "More..." };
     document.getElementById(sectionId).innerHTML = renderResults(
-      playlists.map(renderPlaylist).concat(more),
+      playlists.map(renderPlaylist(userId)).concat(more),
       sectionId
     );
     document.getElementsByClassName("showMore")[0].onclick = function (e) {
