@@ -135,7 +135,9 @@ window.$ =
     document.getElementsByClassName("showMore")[0].onclick = function (e) {
       e.preventDefault();
       this.parentNode.removeChild(this);
-      fadeIn(document.getElementsByClassName("hidden"));
+      for (const el of [...document.getElementsByClassName("hidden")]){
+        el.classList.remove('hidden');
+      }
       return false;
     };
     const playlistNodes = document.getElementsByClassName("playlist");
@@ -192,11 +194,13 @@ window.$ =
     const userId = new URLSearchParams(window.location.search).get("uId");
     if (!userId) return;
     loadUserPlaylists(userId, function (playlists) {
+      console.log(`Found ${playlists.length} playlists.`)
       document.getElementById("pleaseLogin").style.display = "none";
 
       displayPlaylists(userId, playlists, "myPlaylists");
 
       loadStream(`${OPENWHYD_ORIGIN}/u/${userId}`, (tracks) => {
+        console.log(`Found ${tracks?.length} tracks.`)
         if (tracks) displayTracks(tracks.slice(0, NB_TRACKS), "myLastPosts");
         myTracks = tracks.map((tr) => ({
           ...tr,
@@ -282,36 +286,6 @@ window.$ =
   document.getElementById("exitPlaylist").onclick = function () {
     switchToPage("pgMain");
   };
-
-  // fade-in effect for results
-  function fadeIn(nodeSet, liCondition) {
-    var fadeQueue = [];
-    for (let i = 0; i < nodeSet.length; ++i) {
-      var li = nodeSet[i];
-      //if (log) console.log(li);
-      if (li.nodeName == "LI" && (!liCondition || liCondition(li))) {
-        fadeQueue.push(li);
-        li.className = (li.className || "") + " hidden";
-      }
-    }
-    if (fadeQueue.length)
-      var interval = setInterval(function () {
-        var elt = fadeQueue.shift();
-        if (elt) elt.className = elt.className.replace("hidden", "fadeIn");
-        else clearInterval(interval);
-      }, 10);
-  }
-
-  document.getElementById("searchPane").addEventListener(
-    "DOMNodeInserted",
-    function (ev) {
-      if (ev.target.nodeName == "UL")
-        fadeIn(ev.target.children, function (li) {
-          return li.className.indexOf("hidden") == -1;
-        });
-    },
-    false
-  );
 
   loadMainPage();
 })();

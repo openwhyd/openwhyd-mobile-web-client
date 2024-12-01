@@ -2,6 +2,7 @@
 * {
   box-sizing: border-box;
 }
+
 [hidden] {
   display: none !important;
 }
@@ -115,6 +116,15 @@ li {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-animation: fadein 0.3s; /* Safari and Chrome */
+  -moz-animation: fadein 0.3s; /* Firefox */
+  -ms-animation: fadein 0.3s; /* Internet Explorer */
+  -o-animation: fadein 0.3s; /* Opera */
+  animation: fadein 0.3s;
+}
+
+.hidden {
+  display: none;
 }
 
 li:hover {
@@ -146,19 +156,6 @@ li:hover {
   background-size: cover;
   vertical-align: middle;
   margin-right: 5px;
-}
-
-.fadeIn {
-  display: block;
-  -webkit-animation: fadein 0.3s; /* Safari and Chrome */
-  -moz-animation: fadein 0.3s; /* Firefox */
-  -ms-animation: fadein 0.3s; /* Internet Explorer */
-  -o-animation: fadein 0.3s; /* Opera */
-  animation: fadein 0.3s;
-}
-
-li {
-  display: none;
 }
 
 #playlistHeader {
