@@ -2,7 +2,7 @@
 
 const OPENWHYD_ORIGIN = "https://openwhyd.org";
 const STREAM_LIMIT = 999999;
-const NB_TRACKS = 20;
+const NB_TRACKS = 2000; // number of tracks displayed on page
 
 // AJAX functions
 
