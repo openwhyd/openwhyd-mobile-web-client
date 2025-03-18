@@ -92,9 +92,9 @@ window.$ =
             "<a href='" +
             htmlEscape(item.url) +
             "' target='_blank'>" +
-            "<div class='thumb' style='background-image:url(" +
+            "<img class='thumb' src='" +
             htmlEscape(item.img) +
-            ")'></div>" +
+            "' loading='lazy'></div>" +
             name +
             "</a>" +
             //+ ((item.pl || {}).name ? "<p>" + htmlEscape(item.pl.name) + "</p>" : "")
