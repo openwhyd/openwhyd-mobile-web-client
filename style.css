@@ -2,6 +2,7 @@
 * {
   box-sizing: border-box;
 }
+
 [hidden] {
   display: none !important;
 }
@@ -72,7 +73,7 @@ a {
   padding-left: 30px;
   outline: none;
   margin: 0;
-  background: url(/images/big-icon-filter-hover.png) no-repeat 5px 50%;
+  background: url(https://cdn.glitch.global/7b0df6c9-345c-45ad-aea2-98af77497801/big-icon-filter-hover.png?v=1651407006874) no-repeat 5px 50%;
   border: none;
   color: #555;
   font-size: 16px;
@@ -83,13 +84,13 @@ a {
   top: 7px;
   right: 0px;
   border: none;
-  background: url(/images/icon-close.png) no-repeat 0 -16px;
+  background: url(https://cdn.glitch.global/7b0df6c9-345c-45ad-aea2-98af77497801/icon-close.png?v=1651407066906) no-repeat 0 -16px;
   width: 16px;
   height: 16px;
 }
 
 .searchClear.loading {
-  background: url(/images/loader.gif) no-repeat 0 0;
+  background: url(https://cdn.glitch.global/7b0df6c9-345c-45ad-aea2-98af77497801/loader.gif?v=1651407095131) no-repeat 0 0;
 }
 
 h1 {
@@ -115,6 +116,15 @@ li {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-animation: fadein 0.3s; /* Safari and Chrome */
+  -moz-animation: fadein 0.3s; /* Firefox */
+  -ms-animation: fadein 0.3s; /* Internet Explorer */
+  -o-animation: fadein 0.3s; /* Opera */
+  animation: fadein 0.3s;
+}
+
+.hidden {
+  display: none;
 }
 
 li:hover {
@@ -139,26 +149,14 @@ li:hover {
 }
 
 .thumb {
+  display: block;
   float: left;
   width: 40px;
   height: 40px;
-  background-position: 50% 50%;
-  background-size: cover;
+  object-fit: cover;  /* similar to background-size: cover */
+  object-position: 50% 50%;  /* similar to background-position: center */
   vertical-align: middle;
   margin-right: 5px;
-}
-
-.fadeIn {
-  display: block;
-  -webkit-animation: fadein 0.3s; /* Safari and Chrome */
-  -moz-animation: fadein 0.3s; /* Firefox */
-  -ms-animation: fadein 0.3s; /* Internet Explorer */
-  -o-animation: fadein 0.3s; /* Opera */
-  animation: fadein 0.3s;
-}
-
-li {
-  display: none;
 }
 
 #playlistHeader {
