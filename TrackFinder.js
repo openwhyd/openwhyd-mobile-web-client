@@ -86,6 +86,8 @@ window.$ =
         array.map(function (item) {
           var name = htmlEscape(item.name);
           if (q) name = name.replace(new RegExp(q, "gi"), "<b>$&</b>"); // highlight matching part
+          // 1x1 transparent GIF data URL
+          const transparentPixel = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
           return (
             "<li class='" +
             (item.cssClass || "") +
@@ -99,7 +101,7 @@ window.$ =
             htmlEscape(item.url) +
             "' target='_blank'>" +
             "<img class='thumb' src='" +
-            htmlEscape(item.img) +
+            (item.img ? htmlEscape(item.img) : transparentPixel) +
             "' loading='lazy'></div>" +
             name +
             "</a>" +
