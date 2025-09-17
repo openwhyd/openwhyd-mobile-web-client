@@ -75,7 +75,13 @@ window.$ =
   // rendering
 
   function renderResults(array, name, q) {
-    return ["<h1>" + (LABELS[name] || name) + "</h1>", "<ul>"]
+    const ytTrackIds = array
+      .filter((track) => track?.eId?.startsWith("/yt/"))
+      .slice(0, 50) // limit to first 50 tracks to avoid URL too long
+      .map((track) => track?.eId?.replace("/yt/", ""))
+      .join(",");
+    const ytPlayBtn = ytTrackIds.length > 0 ? [`<a id="toYouTube" target="_blank" href="https://www.youtube.com/watch_videos?video_ids=${ytTrackIds}">Play with YouTube</a>`] : [];
+    return [...ytPlayBtn, "<h1>" + (LABELS[name] || name) + "</h1>", "<ul>"]
       .concat(
         array.map(function (item) {
           var name = htmlEscape(item.name);
@@ -110,6 +116,7 @@ window.$ =
     url: eidToUrl(t.eId),
     img: t.img,
     name: t.name,
+    eId: t.eId, // used by "Play with YouTube" button
   });
 
   const renderPlaylist = (userId) => (playlist, i) => ({
@@ -176,12 +183,6 @@ window.$ =
     loadStream(url, function (tracks) {
       tracks = tracks || [];
       displayTracks(tracks, "playlistTracks");
-      document.getElementById(
-        "toYouTube"
-      ).href = `https://www.youtube.com/watch_videos?video_ids=${tracks
-        .filter((track) => track.eId.startsWith("/yt/"))
-        .map((track) => track.eId.replace("/yt/", ""))
-        .join(",")}`;
     });
     switchToPage("pgPlaylist");
   }
