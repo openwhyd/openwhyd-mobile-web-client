@@ -39,7 +39,7 @@ window.$ =
     };
   })();
 
-// main logic of mobile/index.html
+// main logic of mobile/404.html (index.html that works for any requested path)
 
 (function () {
   // TrackFinder configuration
@@ -168,6 +168,23 @@ window.$ =
     );
   }
 
+  // Make sure the handle is a safe, encoded string before inserting in the URL.
+  function sanitizeHandle(userHandle) {
+    if (!userHandle) return null;
+    try {
+      return encodeURIComponent(String(userHandle).trim().replace(/^@+/, ""));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function loadUserInfoByHandle(userHandle, callback) {
+    $.getJSON(
+      `${OPENWHYD_ORIGIN}/${sanitizeHandle(userHandle)}/info?callback=?`,
+      callback
+    );
+  }
+
   function loadUserPlaylists(userId, callback) {
     $.getJSON(
       `${OPENWHYD_ORIGIN}/u/${userId}/playlists?format=json&callback=?`,
@@ -193,8 +210,13 @@ window.$ =
 
   let myTracks = [];
 
-  function loadMainPage() {
-    const userId = new URLSearchParams(window.location.search).get("uId");
+  async function loadMainPage() {
+    let userId = new URLSearchParams(window.location.search).get("uId");
+    if (!userId) {
+      const [userHandle] = window.location.pathname.split("/").filter((p) => p);
+      const user = await new Promise(resolve => loadUserInfoByHandle(userHandle, resolve));
+      userId = user?._id;
+    }
     if (!userId) return;
     loadUserPlaylists(userId, function (playlists) {
       console.log(`Found ${playlists.length} playlists.`)
