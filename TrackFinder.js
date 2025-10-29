@@ -39,7 +39,7 @@ window.$ =
     };
   })();
 
-// main logic of mobile/404.html (index.html that works for any requested path)
+// main logic of index.html and 404.html (which that works for any requested path)
 
 (function () {
   // TrackFinder configuration
