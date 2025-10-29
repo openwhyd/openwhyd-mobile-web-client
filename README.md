@@ -11,3 +11,7 @@ Feel free to customize it by [forking it on github.com](https://github.com/openw
 - https://github.com/openwhyd/openwhyd/pull/791
 - https://github.com/adrienjoly/openwhyd-search/blob/master/openwhyd-search.js
 - https://github.com/openwhyd/openwhyd/pull/556/files
+
+## GitHub Pages fallback for user paths
+
+This repository is published on GitHub Pages (https://m.openwhyd.org/). To allow URLs such as `https://m.openwhyd.org/adrien`, we use a `404.html` fallback.
